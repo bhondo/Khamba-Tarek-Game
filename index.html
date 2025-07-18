@@ -1,213 +1,129 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>খাম্বা তারেক গেম</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>খাম্বা তারেক</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to bottom, #e0e0e0, #b0b0b0);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    #intro, #game, #endScreen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
       text-align: center;
-    }
-    #intro {
-      display: flex;
-    }
-    .tickbox {
-      margin: 20px;
-    }
-    .start-btn, .restart-btn {
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: #2196f3;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+      padding: 20px;
     }
     #gameArea {
-      width: 100%;
-      height: 70vh;
-      position: relative;
-      background: #f2f2f2;
-      overflow: hidden;
-      border: 2px solid #333;
+      display: none;
     }
-    #character {
+    #tarek {
+      width: 100px;
+      height: 100px;
+      background-color: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: absolute;
-      bottom: 20px;
+      top: 100px;
       left: 0;
-      width: 80px;
-      height: 120px;
-      background-image: url('https://i.ibb.co/P6BQcyM/suit-character.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      transition: left 0.5s;
+      transition: left 0.2s;
     }
-    #sandal {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-image: url('https://i.ibb.co/VWWMrvn/sandal.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      display: none;
-      transition: bottom 0.3s linear;
-    }
-    #hitEffect {
-      position: absolute;
-      bottom: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: bold;
-      font-size: 20px;
-      color: red;
-      display: none;
+    #shoeButton {
+      margin-top: 300px;
+      font-size: 30px;
+      padding: 20px;
     }
     #scoreBoard {
       font-size: 20px;
-      margin-top: 10px;
-    }
-    #sandalBtn {
       margin-top: 20px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background-color: #ff5722;
-      color: white;
-      font-size: 16px;
-      border: none;
-      cursor: pointer;
     }
-    #leaderboard {
+    #endScreen {
+      display: none;
+      font-size: 24px;
       margin-top: 20px;
-      max-height: 200px;
-      overflow-y: auto;
     }
   </style>
 </head>
 <body>
   <div id="intro">
-    <div class="tickbox">
-      <p>“খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার”</p>
-      <input type="checkbox" id="agree" /> আমি বুঝেছি
-    </div>
-    <button class="start-btn" onclick="startGame()">Start the Game</button>
-  </div>  <div id="game">
-    <div id="gameArea">
-      <div id="character"></div>
-      <div id="sandal"></div>
-      <div id="hitEffect">জুতা লাগলো!</div>
-    </div>
+    <p>✅ খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার</p>
+    <button onclick="startGameIntro()">✔️ টিক দিন</button>
+  </div>
+
+  <div id="startButtonArea" style="display:none;">
+    <button onclick="startGame()">🎮 Start The Game</button>
+  </div>
+
+  <div id="gameArea">
+    <div id="tarek">বোন আমি তারেক বলছি</div>
+    <button id="shoeButton" onclick="hitTarek()">👞 জুতা মারো</button>
     <div id="scoreBoard">স্কোর: <span id="score">0</span></div>
-    <button id="sandalBtn" onclick="throwSandal()">👟</button>
-  </div>  <div id="endScreen">
-    <h2>গেম শেষ!</h2>
+  </div>
+
+  <div id="endScreen">
+    <h2>খেলা শেষ!</h2>
     <p>আপনার স্কোর: <span id="finalScore"></span></p>
-    <p id="scoreComment"></p>
-    <input type="text" id="playerName" placeholder="আপনার নাম লিখুন" />
-    <button class="restart-btn" onclick="saveScore()">লিডারবোর্ডে যুক্ত করুন</button>
-    <div id="leaderboard">
-      <h3>🥇 লিডারবোর্ড</h3>
-      <ul id="leaderboardList"></ul>
-    </div>
-    <button class="start-btn" onclick="restartGame()">আবার শুরু করুন</button>
-  </div><audio id="hitSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <p id="scoreMessage"></p>
+  </div>
 
   <script>
     let score = 0;
-    let gameInterval, moveInterval;
-    const character = document.getElementById('character');
-    const sandal = document.getElementById('sandal');
-    const hitEffect = document.getElementById('hitEffect');
-    const scoreEl = document.getElementById('score');
-    const hitSound = document.getElementById('hitSound');
+    let gameInterval;
+    let tarekDirection = 1;
+    let tarek = document.getElementById('tarek');
 
-    function startGame() {
-      if (!document.getElementById('agree').checked) {
-        alert("দয়া করে টিক দিন!");
-        return;
-      }
+    function startGameIntro() {
       document.getElementById('intro').style.display = 'none';
-      document.getElementById('game').style.display = 'flex';
-      score = 0;
-      scoreEl.textContent = score;
-      let pos = 0;
-      let direction = 1;
-      moveInterval = setInterval(() => {
-        pos = direction === 1 ? 80 : 0;
-        character.style.left = `${pos}%`;
-        direction *= -1;
-      }, 5000);
-
-      gameInterval = setTimeout(() => {
-        clearInterval(moveInterval);
-        endGame();
-      }, 60000);
+      document.getElementById('startButtonArea').style.display = 'block';
     }
 
-    function throwSandal() {
-      sandal.style.display = 'block';
-      sandal.style.bottom = '150px';
-      setTimeout(() => {
-        let charLeft = character.getBoundingClientRect().left;
-        let charRight = character.getBoundingClientRect().right;
-        let sandLeft = sandal.getBoundingClientRect().left;
-        let sandRight = sandal.getBoundingClientRect().right;
+    function startGame() {
+      document.getElementById('startButtonArea').style.display = 'none';
+      document.getElementById('gameArea').style.display = 'block';
+      moveTarek();
+      gameInterval = setInterval(moveTarek, 300);
+      setTimeout(endGame, 60000); // 1 minute
+    }
 
-        if (sandLeft < charRight && sandRight > charLeft) {
-          score++;
-          scoreEl.textContent = score;
-          hitSound.play();
-          hitEffect.style.display = 'block';
-          setTimeout(() => hitEffect.style.display = 'none', 800);
-        }
-        sandal.style.display = 'none';
-        sandal.style.bottom = '80px';
-      }, 300);
+    function moveTarek() {
+      let currentLeft = parseInt(tarek.style.left);
+      if (currentLeft >= window.innerWidth - 120 || currentLeft <= 0) tarekDirection *= -1;
+      tarek.style.left = (currentLeft + (20 * tarekDirection)) + 'px';
+    }
+
+    function hitTarek() {
+      const tarekCenter = tarek.getBoundingClientRect().left + tarek.offsetWidth / 2;
+      const screenCenter = window.innerWidth / 2;
+      if (Math.abs(tarekCenter - screenCenter) < 50) {
+        score++;
+        document.getElementById('score').innerText = score;
+        tarek.style.top = '150px';
+        setTimeout(() => {
+          tarek.style.top = '100px';
+        }, 2000);
+      }
     }
 
     function endGame() {
-      document.getElementById('game').style.display = 'none';
-      document.getElementById('endScreen').style.display = 'flex';
-      document.getElementById('finalScore').textContent = score;
-
-      let comment = "";
-      if (score === 0) comment = "তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না";
-      else if (score <= 5) comment = "খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি";
-      else if (score <= 10) comment = "খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।";
-      else if (score <= 15) comment = "এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তোর চান্দা এ মাসে মাফ";
-      else comment = "ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব";
-
-      document.getElementById('scoreComment').textContent = comment;
+      clearInterval(gameInterval);
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'block';
+      document.getElementById('finalScore').innerText = score;
+      let msg = '';
+      if (score === 0) {
+        msg = 'তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না';
+      } else if (score <= 5) {
+        msg = 'খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি';
+      } else if (score <= 10) {
+        msg = 'খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।';
+      } else if (score <= 15) {
+        msg = 'এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তের চান্দা এ মাসে মাফ';
+      } else if (score <= 20) {
+        msg = 'ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব';
+      } else {
+        msg = 'তুই তো তারেক ভাইরে জুতা দিয়া উড়ায়া দিলি! কিং হয়ে গেছিস!';
+      }
+      document.getElementById('scoreMessage').innerText = msg;
     }
-
-    function saveScore() {
-      const name = document.getElementById('playerName').value.trim();
-      if (!name) return;
-      const li = document.createElement('li');
-      li.textContent = `${name} - ${score} পয়েন্ট`;
-      document.getElementById('leaderboardList').appendChild(li);
-      document.getElementById('playerName').value = '';
-    }
-
-    function restartGame() {
-      document.getElementById('endScreen').style.display = 'none';
-      document.getElementById('intro').style.display = 'flex';
-    }
-  </script></body>
+  </script>
+</body>
 </html>
