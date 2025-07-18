@@ -34,3 +34,188 @@
       background-color: #2196f3;
       color: white;
       border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #gameArea {
+      width: 100%;
+      height: 70vh;
+      position: relative;
+      background: #f2f2f2;
+      overflow: hidden;
+      border: 2px solid #333;
+    }
+    #character {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 80px;
+      height: 120px;
+      background-image: url('https://i.ibb.co/P6BQcyM/suit-character.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: left 0.5s;
+    }
+    #sandal {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-image: url('https://i.ibb.co/VWWMrvn/sandal.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      display: none;
+      transition: bottom 0.3s linear;
+    }
+    #hitEffect {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: 20px;
+      color: red;
+      display: none;
+    }
+    #scoreBoard {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+    #sandalBtn {
+      margin-top: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #ff5722;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    #leaderboard {
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="intro">
+    <div class="tickbox">
+      <p>“খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার”</p>
+      <input type="checkbox" id="agree" /> আমি বুঝেছি
+    </div>
+    <button class="start-btn" onclick="startGame()">Start the Game</button>
+  </div>
+
+  <div id="game">
+    <div id="gameArea">
+      <div id="character"></div>
+      <div id="sandal"></div>
+      <div id="hitEffect">জুতা লাগলো!</div>
+    </div>
+    <div id="scoreBoard">স্কোর: <span id="score">0</span></div>
+    <button id="sandalBtn" onclick="throwSandal()">👟</button>
+  </div>
+
+  <div id="endScreen">
+    <h2>গেম শেষ!</h2>
+    <p>আপনার স্কোর: <span id="finalScore"></span></p>
+    <p id="scoreComment"></p>
+    <input type="text" id="playerName" placeholder="আপনার নাম লিখুন" />
+    <button class="restart-btn" onclick="saveScore()">লিডারবোর্ডে যুক্ত করুন</button>
+    <div id="leaderboard">
+      <h3>🥇 লিডারবোর্ড</h3>
+      <ul id="leaderboardList"></ul>
+    </div>
+    <button class="start-btn" onclick="restartGame()">আবার শুরু করুন</button>
+  </div>
+
+  <audio id="hitSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
+  <script>
+    let score = 0;
+    let gameInterval, moveInterval;
+    const character = document.getElementById('character');
+    const sandal = document.getElementById('sandal');
+    const hitEffect = document.getElementById('hitEffect');
+    const scoreEl = document.getElementById('score');
+    const hitSound = document.getElementById('hitSound');
+
+    function startGame() {
+      if (!document.getElementById('agree').checked) {
+        alert("দয়া করে টিক দিন!");
+        return;
+      }
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('game').style.display = 'flex';
+      score = 0;
+      scoreEl.textContent = score;
+      let pos = 0;
+      let direction = 1;
+      moveInterval = setInterval(() => {
+        pos = direction === 1 ? 80 : 0;
+        character.style.left = `${pos}%`;
+        direction *= -1;
+      }, 5000);
+
+      gameInterval = setTimeout(() => {
+        clearInterval(moveInterval);
+        endGame();
+      }, 60000);
+    }
+
+    function throwSandal() {
+      sandal.style.display = 'block';
+      sandal.style.bottom = '150px';
+      setTimeout(() => {
+        let charLeft = character.getBoundingClientRect().left;
+        let charRight = character.getBoundingClientRect().right;
+        let sandLeft = sandal.getBoundingClientRect().left;
+        let sandRight = sandal.getBoundingClientRect().right;
+
+        if (sandLeft < charRight && sandRight > charLeft) {
+          score++;
+          scoreEl.textContent = score;
+          hitSound.play();
+          hitEffect.style.display = 'block';
+          setTimeout(() => hitEffect.style.display = 'none', 800);
+        }
+        sandal.style.display = 'none';
+        sandal.style.bottom = '80px';
+      }, 300);
+    }
+
+    function endGame() {
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'flex';
+      document.getElementById('finalScore').textContent = score;
+
+      let comment = "";
+      if (score === 0) comment = "তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না";
+      else if (score <= 5) comment = "খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি";
+      else if (score <= 10) comment = "খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।";
+      else if (score <= 15) comment = "এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তোর চান্দা এ মাসে মাফ";
+      else comment = "ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব";
+
+      document.getElementById('scoreComment').textContent = comment;
+    }
+
+    function saveScore() {
+      const name = document.getElementById('playerName').value.trim();
+      if (!name) return;
+      const li = document.createElement('li');
+      li.textContent = `${name} - ${score} পয়েন্ট`;
+      document.getElementById('leaderboardList').appendChild(li);
+      document.getElementById('playerName').value = '';
+    }
+
+    function restartGame() {
+      document.getElementById('endScreen').style.display = 'none';
+      document.getElementById('intro').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
