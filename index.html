@@ -1,212 +1,129 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>খাম্বা তারেক</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: sans-serif;
-    }
     body {
-      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
       text-align: center;
-      overflow: hidden;
-    }
-    #start-screen, #game-screen, #end-screen {
-      display: none;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
       padding: 20px;
     }
-    #start-screen {
-      display: flex;
+    #gameArea {
+      display: none;
     }
-    .tick-box {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-    }
-    .tick-box input {
-      margin-right: 10px;
-    }
-    #game-area {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background-color: #e0e0e0;
-    }
-    #character {
-      position: absolute;
+    #tarek {
       width: 100px;
       height: 100px;
-      background-color: #333;
+      background-color: #000;
       color: white;
       display: flex;
-      justify-content: center;
       align-items: center;
-      border-radius: 10px;
-      top: 40%;
-      transition: left 2s;
-    }
-    #character.hit {
-      animation: hitEffect 0.5s;
-    }
-    @keyframes hitEffect {
-      0% { transform: rotate(0deg); }
-      50% { transform: rotate(20deg); }
-      100% { transform: rotate(0deg); }
-    }
-    #shoe-button {
+      justify-content: center;
       position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background-color: red;
-      color: white;
+      top: 100px;
+      left: 0;
+      transition: left 0.2s;
+    }
+    #shoeButton {
+      margin-top: 300px;
+      font-size: 30px;
+      padding: 20px;
+    }
+    #scoreBoard {
       font-size: 20px;
-      border: none;
-      cursor: pointer;
-      z-index: 10;
+      margin-top: 20px;
     }
-    .flying-shoe {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background-color: brown;
-      border-radius: 5px;
-      animation: fly 1s linear;
-      z-index: 5;
-    }
-    @keyframes fly {
-      0% { bottom: 100px; left: 50%; transform: translateX(-50%) scale(1); opacity: 1; }
-      100% { bottom: 60%; transform: translateX(-50%) scale(1.5); opacity: 0; }
-    }
-    #score, #timer {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 18px;
-    }
-    #timer {
-      left: auto;
-      right: 10px;
-    }
-    #end-screen h2 {
-      font-size: 32px;
-      margin-bottom: 20px;
+    #endScreen {
+      display: none;
+      font-size: 24px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div id="start-screen">
-    <h1>খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন?<br> তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার</h1>
-    <div class="tick-box">
-      <input type="checkbox" id="agree"> <label for="agree">আমি রাজি</label>
-    </div>
-    <button onclick="showGame()">Start The Game</button>
-  </div>  <div id="game-screen">
-    <div id="game-area">
-      <div id="score">স্কোর: 0</div>
-      <div id="timer">সময়: 60</div>
-      <div id="character">তারেক ভাই</div>
-      <button id="shoe-button" onclick="throwShoe()">👟</button>
-    </div>
-  </div>  <div id="end-screen">
-    <h2 id="final-score"></h2>
-    <p id="score-message"></p>
-  </div>  <script>
-    const startScreen = document.getElementById('start-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const endScreen = document.getElementById('end-screen');
-    const character = document.getElementById('character');
-    const shoeButton = document.getElementById('shoe-button');
-    const scoreEl = document.getElementById('score');
-    const timerEl = document.getElementById('timer');
-    const finalScore = document.getElementById('final-score');
-    const scoreMessage = document.getElementById('score-message');
+  <div id="intro">
+    <p>✅ খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার</p>
+    <button onclick="startGameIntro()">✔️ টিক দিন</button>
+  </div>
 
+  <div id="startButtonArea" style="display:none;">
+    <button onclick="startGame()">🎮 Start The Game</button>
+  </div>
+
+  <div id="gameArea">
+    <div id="tarek">বোন আমি তারেক বলছি</div>
+    <button id="shoeButton" onclick="hitTarek()">👞 জুতা মারো</button>
+    <div id="scoreBoard">স্কোর: <span id="score">0</span></div>
+  </div>
+
+  <div id="endScreen">
+    <h2>খেলা শেষ!</h2>
+    <p>আপনার স্কোর: <span id="finalScore"></span></p>
+    <p id="scoreMessage"></p>
+  </div>
+
+  <script>
     let score = 0;
-    let timeLeft = 60;
-    let characterPosition = 0;
-    let canHit = true;
+    let gameInterval;
+    let tarekDirection = 1;
+    let tarek = document.getElementById('tarek');
 
-    function showGame() {
-      if (document.getElementById('agree').checked) {
-        startScreen.style.display = 'none';
-        gameScreen.style.display = 'block';
-        startGame();
-      } else {
-        alert('টিক মার্ক দিন আগে!');
-      }
-    }
-
-    function moveCharacter() {
-      characterPosition = characterPosition === 0 ? window.innerWidth - 120 : 0;
-      character.style.left = characterPosition + 'px';
-    }
-
-    function throwShoe() {
-      const shoe = document.createElement('div');
-      shoe.classList.add('flying-shoe');
-      document.getElementById('game-area').appendChild(shoe);
-
-      setTimeout(() => shoe.remove(), 1000);
-
-      const characterCenter = character.offsetLeft + character.offsetWidth / 2;
-      const screenCenter = window.innerWidth / 2;
-      const diff = Math.abs(characterCenter - screenCenter);
-
-      if (diff < 60 && canHit) {
-        score++;
-        scoreEl.innerText = 'স্কোর: ' + score;
-        character.classList.add('hit');
-        canHit = false;
-        setTimeout(() => {
-          character.classList.remove('hit');
-          canHit = true;
-        }, 1000);
-      }
+    function startGameIntro() {
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('startButtonArea').style.display = 'block';
     }
 
     function startGame() {
-      moveCharacter();
-      let interval = setInterval(moveCharacter, 5000);
+      document.getElementById('startButtonArea').style.display = 'none';
+      document.getElementById('gameArea').style.display = 'block';
+      moveTarek();
+      gameInterval = setInterval(moveTarek, 300);
+      setTimeout(endGame, 60000); // 1 minute
+    }
 
-      let timerInterval = setInterval(() => {
-        timeLeft--;
-        timerEl.innerText = 'সময়: ' + timeLeft;
-        if (timeLeft <= 0) {
-          clearInterval(interval);
-          clearInterval(timerInterval);
-          endGame();
-        }
-      }, 1000);
+    function moveTarek() {
+      let currentLeft = parseInt(tarek.style.left);
+      if (currentLeft >= window.innerWidth - 120 || currentLeft <= 0) tarekDirection *= -1;
+      tarek.style.left = (currentLeft + (20 * tarekDirection)) + 'px';
+    }
+
+    function hitTarek() {
+      const tarekCenter = tarek.getBoundingClientRect().left + tarek.offsetWidth / 2;
+      const screenCenter = window.innerWidth / 2;
+      if (Math.abs(tarekCenter - screenCenter) < 50) {
+        score++;
+        document.getElementById('score').innerText = score;
+        tarek.style.top = '150px';
+        setTimeout(() => {
+          tarek.style.top = '100px';
+        }, 2000);
+      }
     }
 
     function endGame() {
-      gameScreen.style.display = 'none';
-      endScreen.style.display = 'flex';
-      finalScore.innerText = `আপনার স্কোর: ${score}`;
-
+      clearInterval(gameInterval);
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'block';
+      document.getElementById('finalScore').innerText = score;
+      let msg = '';
       if (score === 0) {
-        scoreMessage.innerText = 'তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না';
+        msg = 'তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না';
       } else if (score <= 5) {
-        scoreMessage.innerText = 'খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি';
+        msg = 'খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি';
       } else if (score <= 10) {
-        scoreMessage.innerText = 'খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।';
+        msg = 'খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।';
       } else if (score <= 15) {
-        scoreMessage.innerText = 'এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তের চান্দা এ মাসে মাফ';
+        msg = 'এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তের চান্দা এ মাসে মাফ';
+      } else if (score <= 20) {
+        msg = 'ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব';
       } else {
-        scoreMessage.innerText = 'ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব';
+        msg = 'তুই তো তারেক ভাইরে জুতা দিয়া উড়ায়া দিলি! কিং হয়ে গেছিস!';
       }
+      document.getElementById('scoreMessage').innerText = msg;
     }
-  </script></body>
+  </script>
+</body>
 </html>
