@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="bn">
+<!DOCTYPE html>
+<html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -125,27 +126,30 @@
       <h1>খাম্বা তারেক গেমে স্বাগতম!</h1>
       <p>‘‘খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার’’</p>
       <button onclick="startGame()">খেলা শুরু করুন</button>
-    </div><img id="character" src="https://i.ibb.co/rZBTzfd/character.png" style="left: 10px;" />
-<img id="sandal" src="https://i.ibb.co/6nJX4Y9/sandal.png" />
-<img id="hitAnimation" src="https://i.ibb.co/j4rj5n7/bang.png" />
-<button id="throwButton" onclick="throwSandal()">জুতা মারো</button>
+    </div>
 
-<div id="scoreBoard">স্কোর: <span id="score">0</span></div>
-<div id="leaderBoard">
-  লিডারবোর্ড:
-  <div id="leaderBoardList"></div>
-</div>
+    <img id="character" src="https://i.ibb.co/rZBTzfd/character.png" style="left: 10px;" />
+    <img id="sandal" src="https://i.ibb.co/6nJX4Y9/sandal.png" />
+    <img id="hitAnimation" src="https://i.ibb.co/j4rj5n7/bang.png" />
+    <button id="throwButton" onclick="throwSandal()">জুতা মারো</button>
 
-<div id="endScreen">
-  <h2>গেম শেষ!</h2>
-  <p>আপনার স্কোর: <span id="finalScore"></span></p>
-  <input type="text" id="playerName" placeholder="আপনার নাম লিখুন" />
-  <button onclick="submitScore()">লিডারবোর্ডে যুক্ত করুন</button>
-  <button onclick="restartGame()">আবার শুরু করুন</button>
-  <p style="margin-top: 20px; font-size: 14px;">Developed by <b>Esran Islam Sohel</b></p>
-</div>
+    <div id="scoreBoard">স্কোর: <span id="score">0</span></div>
+    <div id="leaderBoard">
+      লিডারবোর্ড:
+      <div id="leaderBoardList"></div>
+    </div>
 
-  </div><audio id="hitSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <div id="endScreen">
+      <h2>গেম শেষ!</h2>
+      <p>আপনার স্কোর: <span id="finalScore"></span></p>
+      <input type="text" id="playerName" placeholder="আপনার নাম লিখুন" />
+      <button onclick="submitScore()">লিডারবোর্ডে যুক্ত করুন</button>
+      <button onclick="restartGame()">আবার শুরু করুন</button>
+      <p style="margin-top: 20px; font-size: 14px;">Developed by <b>Esran Islam Sohel</b></p>
+    </div>
+  </div>
+
+  <audio id="hitSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
   <script>
     let character = document.getElementById("character");
@@ -225,5 +229,6 @@
     function restartGame() {
       location.reload();
     }
-  </script></body>
+  </script>
+</body>
 </html>
