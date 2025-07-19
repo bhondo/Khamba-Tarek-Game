@@ -3,241 +3,158 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>খাম্বা তারেক: জুতা মারার গেম</title>
+  <title>খাম্বা তারেক</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      font-family: sans-serif;
+      background: #f0f0f0;
+      text-align: center;
     }
-    #gameArea {
+    #start-screen, #game-screen, #end-screen {
+      display: none;
+      padding: 40px;
+    }
+    #start-screen.active, #game-screen.active, #end-screen.active {
+      display: block;
+    }
+    #tick {
+      font-size: 24px;
+      cursor: pointer;
+      margin: 20px;
+    }
+    #game-canvas {
+      width: 100%;
+      height: 300px;
+      background: #fff;
       position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(to top, #87ceeb, #ffffff);
       overflow: hidden;
+      border: 2px solid #444;
+      margin-bottom: 20px;
     }
-    #character {
+    .runner {
       position: absolute;
-      bottom: 100px;
-      width: 80px;
-      transition: left 1s ease-in-out;
-    }
-    #sandal {
-      position: absolute;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      display: none;
-    }
-    #hitAnimation {
-      position: absolute;
-      bottom: 180px;
+      bottom: 10px;
       width: 100px;
-      display: none;
-      z-index: 100;
+      height: 100px;
+      background: url('https://i.imgur.com/WxNC3Sh.png') no-repeat center center / cover;
+      transition: transform 0.2s ease;
     }
-    #throwButton {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      font-size: 14px;
+    #shoe-btn {
+      font-size: 24px;
+      padding: 10px 20px;
       cursor: pointer;
+      background: orange;
+      border: none;
+      border-radius: 10px;
     }
-    #scoreBoard {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 16px;
+    #score {
+      font-size: 20px;
+      margin-bottom: 10px;
     }
-    #leaderBoard {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-    #endScreen {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      z-index: 999;
-    }
-    #startScreen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, #ffffff, #ffe8cc);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      text-align: center;
-    }
-    #startScreen h1 {
-      font-size: 2.5em;
-      color: #333;
-      margin-bottom: 20px;
-    }
-    #startScreen p {
-      font-size: 16px;
-      color: #000;
-      margin-bottom: 20px;
-      max-width: 400px;
-    }
-    #startScreen button {
-      padding: 12px 24px;
+    #leaderboard {
+      margin-top: 20px;
       font-size: 18px;
-      background-color: green;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #leaderBoardList {
-      margin-top: 10px;
-      text-align: left;
     }
   </style>
 </head>
 <body>
-  <div id="gameArea">
-    <div id="startScreen">
-      <h1>খাম্বা তারেক গেমে স্বাগতম!</h1>
-      <p>১০% কমিশন না দিলে খেলা শুরু করা যাবে না! খেলা শুরু করতে নিচের বোতামে চাপ দিন।</p>
-      <button onclick="startGame()">খেলা শুরু করুন</button>
-    </div>
-
-    <img id="character" src="https://i.ibb.co/rZBTzfd/character.png" style="left: 10px;" />
-    <img id="sandal" src="https://i.ibb.co/4ZHzxFy/real-sandal.png" />
-    <img id="hitAnimation" src="https://i.ibb.co/j4rj5n7/bang.png" />
-    <button id="throwButton" onclick="throwSandal()">জুতা মারো</button>
-
-    <div id="scoreBoard">স্কোর: <span id="score">0</span></div>
-    <div id="leaderBoard">
-      লিডারবোর্ড:
-      <div id="leaderBoardList"></div>
-    </div>
-
-    <div id="endScreen">
-      <h2>গেম শেষ!</h2>
-      <p>আপনার স্কোর: <span id="finalScore"></span></p>
-      <input type="text" id="playerName" placeholder="আপনার নাম লিখুন" />
-      <button onclick="submitScore()">লিডারবোর্ডে যুক্ত করুন</button>
-      <button onclick="restartGame()">আবার শুরু করুন</button>
-      <p style="margin-top: 20px; font-size: 14px;">Developed by <b>Esran Islam Sohel</b></p>
-    </div>
+  <div id="start-screen" class="active">
+    <p>‘‘খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার’’</p>
+    <div id="tick">✅ টিক দিন</div>
   </div>
 
-  <audio id="hitSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+  <div id="game-screen">
+    <div id="score">স্কোর: ০</div>
+    <div id="game-canvas">
+      <div class="runner" id="runner"> <span style="position:absolute;top:-20px;color:red;font-weight:bold;">বোন আমি তারেক বলছি</span></div>
+    </div>
+    <button id="shoe-btn">👟</button>
+  </div>
+
+  <div id="end-screen">
+    <h2>আপনার মোট স্কোর: <span id="final-score"></span></h2>
+    <p id="final-msg"></p>
+    <div id="leaderboard"></div>
+  </div>
 
   <script>
-    let character = document.getElementById("character");
-    let sandal = document.getElementById("sandal");
-    let hitAnim = document.getElementById("hitAnimation");
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const endScreen = document.getElementById('end-screen');
+    const tick = document.getElementById('tick');
+    const shoeBtn = document.getElementById('shoe-btn');
+    const scoreDisplay = document.getElementById('score');
+    const runner = document.getElementById('runner');
+    const finalScore = document.getElementById('final-score');
+    const finalMsg = document.getElementById('final-msg');
+    const leaderboard = document.getElementById('leaderboard');
+
     let score = 0;
-    let interval;
-    let direction = 'right';
-    let gameOver = false;
-    let leaderBoard = [];
+    let direction = 1;
+    let position = 0;
+    let gameInterval;
+    let gameTimer;
+    let timeLeft = 60;
 
-    function moveCharacter() {
-      if (direction === 'right') {
-        character.style.left = '80%';
-        direction = 'left';
-      } else {
-        character.style.left = '10px';
-        direction = 'right';
-      }
-    }
-
-    function throwSandal() {
-      if (gameOver || sandal.style.display === 'block') return;
-      sandal.style.display = 'block';
-      sandal.style.left = '50%';
-      sandal.style.bottom = '80px';
-      let pos = 80;
-      const throwInterval = setInterval(() => {
-        pos += 10;
-        sandal.style.bottom = pos + 'px';
-        if (pos >= 250) {
-          clearInterval(throwInterval);
-          checkHit();
-        }
-      }, 30);
-    }
-
-    function checkHit() {
-      let charLeft = character.getBoundingClientRect().left;
-      let sandalLeft = sandal.getBoundingClientRect().left;
-      if (Math.abs(charLeft - sandalLeft) < 60) {
-        score++;
-        document.getElementById("score").innerText = score;
-        hitAnim.style.left = character.style.left;
-        hitAnim.style.display = 'block';
-        document.getElementById("hitSound").play();
-        setTimeout(() => {
-          hitAnim.style.display = 'none';
-        }, 500);
-      }
-      sandal.style.display = 'none';
-    }
+    tick.addEventListener('click', () => {
+      startScreen.classList.remove('active');
+      gameScreen.classList.add('active');
+      startGame();
+    });
 
     function startGame() {
-      document.getElementById("startScreen").style.display = "none";
-      interval = setInterval(moveCharacter, 5000);
-      setTimeout(() => {
-        clearInterval(interval);
-        gameOver = true;
-        document.getElementById("endScreen").style.display = "flex";
-        document.getElementById("finalScore").innerText = score;
+      score = 0;
+      scoreDisplay.innerText = `স্কোর: ${score}`;
+
+      gameInterval = setInterval(() => {
+        position += 5 * direction;
+        if (position >= (window.innerWidth - 100) || position <= 0) {
+          direction *= -1;
+        }
+        runner.style.left = position + 'px';
+      }, 30);
+
+      gameTimer = setTimeout(() => {
+        endGame();
       }, 60000);
     }
 
-    function submitScore() {
-      const name = document.getElementById("playerName").value || "Unknown";
-      leaderBoard.push({ name, score });
-      leaderBoard.sort((a, b) => b.score - a.score);
-      updateLeaderBoard();
-    }
+    shoeBtn.addEventListener('click', () => {
+      const runnerX = runner.getBoundingClientRect().left + 50;
+      const screenCenter = window.innerWidth / 2;
+      if (Math.abs(runnerX - screenCenter) < 50) {
+        score++;
+        scoreDisplay.innerText = `স্কোর: ${score}`;
+        runner.style.transform = 'translateY(20px)';
+        setTimeout(() => runner.style.transform = 'translateY(0)', 200);
+      }
+    });
 
-    function updateLeaderBoard() {
-      const list = document.getElementById("leaderBoardList");
-      list.innerHTML = leaderBoard.map(entry => `<div>${entry.name}: ${entry.score}</div>`).join('');
-    }
+    function endGame() {
+      clearInterval(gameInterval);
+      clearTimeout(gameTimer);
+      gameScreen.classList.remove('active');
+      endScreen.classList.add('active');
+      finalScore.innerText = score;
+      let msg = '';
+      if (score === 0) msg = 'তুই মুরি খা, আর চান্দা দে, একটা জুতাও মারতে পারলি না';
+      else if (score <= 5) msg = 'খুবই খারাপ ফলাফল, সামনে মাস থেকে চান্দা বাড়াইয়া দিবি';
+      else if (score <= 10) msg = 'খারাপ না, ভালোই হয়সে। তোর জন্য চান্দা আগের মতই রইলো।';
+      else if (score <= 15) msg = 'এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তের চান্দা এ মাসে মাফ';
+      else msg = 'ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব';
+      finalMsg.innerText = msg;
 
-    function restartGame() {
-      location.reload();
+      const previous = parseInt(localStorage.getItem('best-score') || '0');
+      if (score > previous) {
+        localStorage.setItem('best-score', score);
+      }
+      leaderboard.innerHTML = `
+        <hr>
+        <h3>🏆 লিডারবোর্ড</h3>
+        <p>আপনার সেরা স্কোর: ${Math.max(score, previous)}</p>
+      `;
     }
   </script>
 </body>
