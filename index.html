@@ -38,7 +38,7 @@
       bottom: 10px;
       width: 100px;
       height: 120px;
-      background: url('a14402e8-5284-40f4-87fc-ffbc0a0f5bca.png') no-repeat center center / cover;
+      background: url('596-5968114_2d-game-character-png-clipart.png') no-repeat center center / contain;
       transition: transform 0.2s ease;
     }
     .shoe {
@@ -76,12 +76,18 @@
     #username-input {
       margin-top: 20px;
     }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <div id="start-screen" class="active">
     <p>‘‘খাম্বা তারেক ভাইয়ের পাওনা ১০% পরিশোধ করেছেন? তাহলে গেম খেলতে পারবেন। অন্যথায় পাথর দিয়ে হ*ত্যা করা হবে। খুব হুশিয়ার’’</p>
     <div id="tick">✅ টিক দিন</div>
+    <footer>ডেভেলপার: Esran Islam Sohel</footer>
   </div>
 
   <div id="game-screen">
@@ -91,6 +97,7 @@
       <div class="runner" id="runner"></div>
     </div>
     <button id="shoe-btn">👟</button>
+    <footer>ডেভেলপার: Esran Islam Sohel</footer>
   </div>
 
   <div id="end-screen">
@@ -102,6 +109,8 @@
       <button onclick="saveScore()">সাবমিট</button>
     </div>
     <div id="leaderboard"></div>
+    <p style="margin-top: 20px; font-weight: bold;">অভিনন্দন! — Esran Islam Sohel এর পক্ষ থেকে।</p>
+    <footer>ডেভেলপার: Esran Islam Sohel</footer>
   </div>
 
   <script>
@@ -154,7 +163,6 @@
       document.getElementById('game-canvas').appendChild(shoe);
 
       const runnerBox = runner.getBoundingClientRect();
-      const shoeBox = shoe.getBoundingClientRect();
       const centerX = window.innerWidth / 2;
       const runnerCenter = runnerBox.left + 50;
 
