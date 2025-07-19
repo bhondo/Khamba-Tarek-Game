@@ -37,9 +37,21 @@
       position: absolute;
       bottom: 10px;
       width: 100px;
-      height: 100px;
-      background: url('https://i.imgur.com/WxNC3Sh.png') no-repeat center center / cover;
+      height: 120px;
+      background: url('a14402e8-5284-40f4-87fc-ffbc0a0f5bca.png') no-repeat center center / cover;
       transition: transform 0.2s ease;
+    }
+    .shoe {
+      position: absolute;
+      bottom: 50px;
+      width: 40px;
+      height: 40px;
+      background: url('https://i.imgur.com/OczXwHY.png') no-repeat center center / contain;
+      animation: throw 0.5s ease forwards;
+    }
+    @keyframes throw {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-150px); opacity: 0; }
     }
     #shoe-btn {
       font-size: 24px;
@@ -53,9 +65,16 @@
       font-size: 20px;
       margin-bottom: 10px;
     }
+    #timer {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
     #leaderboard {
       margin-top: 20px;
       font-size: 18px;
+    }
+    #username-input {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -67,8 +86,9 @@
 
   <div id="game-screen">
     <div id="score">স্কোর: ০</div>
+    <div id="timer">সময়: 60</div>
     <div id="game-canvas">
-      <div class="runner" id="runner"> <span style="position:absolute;top:-20px;color:red;font-weight:bold;">বোন আমি তারেক বলছি</span></div>
+      <div class="runner" id="runner"></div>
     </div>
     <button id="shoe-btn">👟</button>
   </div>
@@ -76,6 +96,11 @@
   <div id="end-screen">
     <h2>আপনার মোট স্কোর: <span id="final-score"></span></h2>
     <p id="final-msg"></p>
+    <div id="username-input">
+      <label for="username">আপনার নাম দিন: </label>
+      <input type="text" id="username" placeholder="নাম" />
+      <button onclick="saveScore()">সাবমিট</button>
+    </div>
     <div id="leaderboard"></div>
   </div>
 
@@ -90,13 +115,10 @@
     const finalScore = document.getElementById('final-score');
     const finalMsg = document.getElementById('final-msg');
     const leaderboard = document.getElementById('leaderboard');
+    const timerDisplay = document.getElementById('timer');
 
-    let score = 0;
-    let direction = 1;
-    let position = 0;
-    let gameInterval;
-    let gameTimer;
-    let timeLeft = 60;
+    let score = 0, direction = 1, position = 0;
+    let gameInterval, countdown, timeLeft = 60;
 
     tick.addEventListener('click', () => {
       startScreen.classList.remove('active');
@@ -106,35 +128,52 @@
 
     function startGame() {
       score = 0;
+      timeLeft = 60;
       scoreDisplay.innerText = `স্কোর: ${score}`;
+      timerDisplay.innerText = `সময়: ${timeLeft}`;
 
       gameInterval = setInterval(() => {
         position += 5 * direction;
-        if (position >= (window.innerWidth - 100) || position <= 0) {
-          direction *= -1;
-        }
+        if (position >= (window.innerWidth - 100) || position <= 0) direction *= -1;
         runner.style.left = position + 'px';
       }, 30);
 
-      gameTimer = setTimeout(() => {
-        endGame();
-      }, 60000);
+      countdown = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = `সময়: ${timeLeft}`;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
     }
 
     shoeBtn.addEventListener('click', () => {
-      const runnerX = runner.getBoundingClientRect().left + 50;
-      const screenCenter = window.innerWidth / 2;
-      if (Math.abs(runnerX - screenCenter) < 50) {
+      const shoe = document.createElement('div');
+      shoe.className = 'shoe';
+      shoe.style.left = (window.innerWidth / 2 - 20) + 'px';
+      document.getElementById('game-canvas').appendChild(shoe);
+
+      const runnerBox = runner.getBoundingClientRect();
+      const shoeBox = shoe.getBoundingClientRect();
+      const centerX = window.innerWidth / 2;
+      const runnerCenter = runnerBox.left + 50;
+
+      if (Math.abs(runnerCenter - centerX) < 50) {
         score++;
         scoreDisplay.innerText = `স্কোর: ${score}`;
         runner.style.transform = 'translateY(20px)';
-        setTimeout(() => runner.style.transform = 'translateY(0)', 200);
+        setTimeout(() => runner.style.transform = 'translateY(0)', 300);
+        shoe.style.animation = 'throw 0.5s ease forwards';
+      } else {
+        shoe.style.opacity = '0.5';
       }
+
+      setTimeout(() => shoe.remove(), 500);
     });
 
     function endGame() {
       clearInterval(gameInterval);
-      clearTimeout(gameTimer);
+      clearInterval(countdown);
       gameScreen.classList.remove('active');
       endScreen.classList.add('active');
       finalScore.innerText = score;
@@ -145,16 +184,22 @@
       else if (score <= 15) msg = 'এত সুন্দর জুতা মারা কার থেকে শিখলি? যা তের চান্দা এ মাসে মাফ';
       else msg = 'ভাই তুই বাংলাদেশে কি করোস? তোরে লন্ডন আনতে হবে। তুই তে আমাদের গর্ব';
       finalMsg.innerText = msg;
+      showLeaderboard();
+    }
 
-      const previous = parseInt(localStorage.getItem('best-score') || '0');
-      if (score > previous) {
-        localStorage.setItem('best-score', score);
-      }
-      leaderboard.innerHTML = `
-        <hr>
-        <h3>🏆 লিডারবোর্ড</h3>
-        <p>আপনার সেরা স্কোর: ${Math.max(score, previous)}</p>
-      `;
+    function saveScore() {
+      const name = document.getElementById('username').value || 'নামবিহীন';
+      const data = JSON.parse(localStorage.getItem('tarek-scores') || '[]');
+      data.push({ name, score });
+      localStorage.setItem('tarek-scores', JSON.stringify(data));
+      showLeaderboard();
+    }
+
+    function showLeaderboard() {
+      const data = JSON.parse(localStorage.getItem('tarek-scores') || '[]');
+      data.sort((a, b) => b.score - a.score);
+      const top = data.slice(0, 5).map((entry, i) => `<p>${i + 1}. ${entry.name} - ${entry.score} পয়েন্ট</p>`).join('');
+      leaderboard.innerHTML = `<hr><h3>🏆 লিডারবোর্ড</h3>${top}`;
     }
   </script>
 </body>
